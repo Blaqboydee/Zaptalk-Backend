@@ -22,6 +22,7 @@ const allowedOrigins = [
   "http://127.0.0.1:5173",
   "http://172.18.64.1:3000",
   "http://192.168.0.187:5173",
+  "https://zaptalk-frontend.vercel.app"
 ];
 
 app.use(
