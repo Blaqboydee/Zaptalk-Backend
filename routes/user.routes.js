@@ -1,9 +1,30 @@
-const express = require('express');
+// backend/routes/user.routes.js
+const express = require("express");
 const router = express.Router();
-const { getUsers, getProfile } = require('../controllers/user.controller');
-const authenticateToken = require('../middlewares/auth.middleware');
+const authenticateToken = require("../middlewares/auth.middleware");
 
-router.get('/', getUsers);
-router.get('/profile', authenticateToken, getProfile)
+const {
+  getUsers,
+  getProfile,
+  updateProfile,
+  uploadAvatar,
+} = require("../controllers/user.controller");
+
+const multer = require("multer");
+const upload = multer({ dest: "tmp/" }); // temporary storage before Cloudinary
+
+// User routes
+
+// Get all users (for starting a chat)
+router.get("/", getUsers);
+
+// Logged-in user's profile
+router.get("/profile", authenticateToken, getProfile);
+
+// Update profile (name, email)
+router.put("/profile", authenticateToken, updateProfile);
+
+// Upload avatar to Cloudinary
+router.post("/upload-avatar", authenticateToken, upload.single("avatar"), uploadAvatar);
 
 module.exports = router;

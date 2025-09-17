@@ -129,4 +129,29 @@ async function getGroupChats(req, res) {
   }
 };
 
-module.exports = { createChat, getDirectChats, getGroupChats };
+
+// Get all chats (direct + group) for a user
+async function getUserChats(req, res) {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({ error: "userId param is required" });
+    }
+
+    const chats = await Chat.find({ users: userId })
+      .populate("users", "name email") // populate user info
+      .populate({
+        path: "messages",
+        populate: { path: "senderId", select: "name email" },
+      });
+
+    res.json(chats);
+  } catch (error) {
+    console.error("Get user chats error:", error);
+    res.status(500).json({ error: error.message });
+  }
+}
+
+module.exports = { createChat, getDirectChats, getGroupChats, getUserChats };
+
