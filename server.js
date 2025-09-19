@@ -11,6 +11,7 @@ const userRoutes = require("./routes/user.routes");
 const chatRoutes = require("./routes/chat.routes");
 const messageRoutes = require("./routes/message.routes");
 const authRoutes = require("./routes/auth.routes");
+const friendRoutes = require("./routes/friends.routes")
 
 const app = express();
 const server = http.createServer(app);
@@ -34,7 +35,7 @@ app.use(
         callback(new Error("Not allowed by CORS"));
       }
     },
-    methods: ["GET", "POST", "PUT"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
@@ -46,6 +47,7 @@ app.use("/users", userRoutes);
 app.use("/chats", chatRoutes);
 app.use("/messages", messageRoutes);
 app.use("/auth", authRoutes);
+app.use('/friends', friendRoutes)
 
 app.get("/", (req, res) => {
   res.send("ZapTalk API is running...");

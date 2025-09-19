@@ -40,14 +40,16 @@ async function getProfile(req, res) {
 async function updateProfile(req, res) {
   try {
     const userId = req.user.id;
-    const { name, email, status } = req.body;
+    const { name, email, bioStatus } = req.body;
+    console.log(bioStatus);
+    
 
     if (!mongoose.Types.ObjectId.isValid(userId))
       return res.status(400).json({ error: "Invalid user ID" });
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { ...(name && { name }), ...(email && { email }), ...(status && {status}) },
+      { ...(name && { name }), ...(email && { email }), ...(bioStatus && {bioStatus}) },
       { new: true, select: "-password -__v" }
     );
 

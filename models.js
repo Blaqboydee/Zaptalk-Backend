@@ -1,34 +1,38 @@
 const mongoose = require("mongoose");
-
-// User schema
 const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     email: { type: String, unique: true, required: true },
     password: { type: String, required: true },
-    avatar: { type: String, default: "" }, // stores Cloudinary URL
+    avatar: { type: String, default: "" },
 
-    // 🔹 Profile status (customizable by the user)
     bioStatus: {
       type: String,
       default: "Hey there! I am using Zaptalk.",
     },
 
-    // 🔹 Presence (managed automatically by backend + socket.io)
     status: {
       state: {
         type: String,
         enum: ["online", "offline"],
         default: "offline",
       },
-      lastSeen: {
-        type: Date,
-        default: null,
-      },
+      lastSeen: { type: Date, default: null },
     },
+
+   
+    friends: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );
+
+
+
 
 // Chat schema
 const chatSchema = new mongoose.Schema(
