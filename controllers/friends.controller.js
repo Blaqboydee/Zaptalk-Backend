@@ -1,38 +1,6 @@
 const { User } = require("../models");
 
-
-async function AddFriend(req, res) {
-     try {
-    const userId = req.body.userId; // logged in user
-    const friendId = req.params.id;
-
-    if (userId === friendId) {
-      return res.status(400).json({ message: "You cannot add yourself." });
-    }
-
-    const user = await User.findById(userId);
-    const friend = await User.findById(friendId);
-
-    if (!user || !friend) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    if (user.friends.includes(friendId)) {
-      return res.status(400).json({ message: "Already friends." });
-    }
-
-    user.friends.push(friendId);
-    friend.friends.push(userId);
-
-    await user.save();
-    await friend.save();
-
-    res.json({ message: "Friend added successfully", user, friend });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-}
-
+//  GET FRIENDS 
 async function getFriends(req, res) {
   try {
     const user = await User.findById(req.params.id).populate(
@@ -58,23 +26,43 @@ async function getFriends(req, res) {
   }
 }
 
+// REMOVE FRIEND 
+const removeFriend = async (req, res) => {
 
-
-async function removeFriend(req, res) {
-     try {
-         
-    const userId = req.body.id;
-    const friendId = req.params.id;
+  console.log(req.body);
   
+  try {
+    const friendIdToRemove = req.body.friendId;
+    const currentUserId = req.body.userId; // or from auth middleware
+    const userName = req.body.userName
+    
+    // Your actual MongoDB operations
+    await User.findByIdAndUpdate(currentUserId, {
+      $pull: { friends: friendIdToRemove }
+    });
+    
+    await User.findByIdAndUpdate(friendIdToRemove, {
+      $pull: { friends: currentUserId }
+    });
 
-
-    await User.findByIdAndUpdate(userId, { $pull: { friends: friendId } });
-    await User.findByIdAndUpdate(friendId, { $pull: { friends: userId } });
-
-    res.json({ message: "Friend removed successfully" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    //  req.io.to(currentUserId).emit("friend_removed", { friendIdToRemove });
+    req.io.to(friendIdToRemove).emit("friend_removed", { friendId: currentUserId, name: userName });
+    
+    res.status(200).json({ 
+      success: true, 
+      message: "Friend removed successfully" 
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
   }
+};
 
-}
-module.exports = {AddFriend, getFriends, removeFriend};
+//
+
+module.exports = {
+  getFriends,
+  removeFriend,
+};

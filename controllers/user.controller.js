@@ -96,6 +96,10 @@ async function uploadAvatar(req, res) {
   }
 }
 
+
+
+
+
 module.exports = {
   getUsers,
   getProfile,
