@@ -29,7 +29,7 @@ async function getFriends(req, res) {
 // REMOVE FRIEND 
 const removeFriend = async (req, res) => {
 
-  console.log(req.body);
+  // console.log(req.body);
   
   try {
     const friendIdToRemove = req.body.friendId;

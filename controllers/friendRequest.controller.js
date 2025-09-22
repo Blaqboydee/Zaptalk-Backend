@@ -2,7 +2,7 @@ const { User } = require("../models");
 
 // Send a friend request
 async function sendFriendRequest(req, res) {
-  console.log(req.body);
+  // console.log(req.body);
   
   try {
     const { userId, senderName } = req.body;
@@ -66,7 +66,7 @@ async function sendFriendRequest(req, res) {
       createdAt: newSentRequest.createdAt
     });
 
-    console.log(`Friend request event emitted to: ${friendId}, by ${senderName}`);
+    // console.log(`Friend request event emitted to: ${friendId}, by ${senderName}`);
 
     res.json({ message: "Friend request sent" });
 
@@ -79,9 +79,9 @@ async function cancelFriendRequest(req, res) {
   try {
     const { userId } = req.body; // sender
     const friendId = req.params.id; // receiver
-    console.log(userId);
+    // console.log(userId);
     
-    console.log(friendId);
+    // console.log(friendId);
     
     const user = await User.findById(userId);
     const friend = await User.findById(friendId);
@@ -151,7 +151,7 @@ async function acceptFriendRequest(req, res) {
 
     const user = await User.findById(userId);
     const requester = await User.findById(requesterId);
-    console.log(user);
+    // console.log(user);
     
       
     if (!user || !requester) {
