@@ -40,8 +40,8 @@ async function getMessages(req, res) {
     let messages;
     if (chatId) {
       messages = await Message.find({ chatId })
-        .populate("senderId", "name email") // Only populate sender info
-        .sort({ createdAt: 1 }) // Sort by creation time
+        .populate("senderId", "name email") 
+        .sort({ createdAt: 1 }) 
         .exec();
     } else {
       messages = await Message.find()
