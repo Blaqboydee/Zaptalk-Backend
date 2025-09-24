@@ -5,7 +5,7 @@ const { User } = require("../models"); // import Mongoose model
 async function register(req, res) {
   try {
     const { name, email, password } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
 
     if (!name || !email || !password) {
       return res

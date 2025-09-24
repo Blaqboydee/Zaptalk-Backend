@@ -6,10 +6,10 @@ async function run() {
 
   try {
     await mongoose.connection.collection("users").drop();
-    console.log("Users collection dropped");
+    // console.log("Users collection dropped");
   } catch (err) {
     if (err.code === 26) {
-      console.log("Users collection does not exist");
+      // console.log("Users collection does not exist");
     } else {
       throw err;
     }

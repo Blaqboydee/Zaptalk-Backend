@@ -32,7 +32,6 @@ async function createMessage(req, res) {
 }
 
 // Get all messages or by chat
-
 async function getMessages(req, res) {
   try {
     const { chatId } = req.query;
@@ -74,6 +73,70 @@ async function getAllMessages(req, res) {
       error: error.message
     });
   }
-
 }
-module.exports = { createMessage, getMessages , getAllMessages};
+
+async function deleteMessage(req, res){
+  // console.log(req.body);
+  
+   try {
+    const { messageId } = req.params;
+    const { userId } = req.body;
+    
+
+
+    // Find and delete only if message belongs to the user
+    const message = await Message.findOneAndDelete({ 
+      _id: messageId,
+       senderId: userId,
+    });
+    //  if (message) {
+    //   // console.log(message);
+      
+    //  }
+
+  
+
+    if (!message) {
+      return res.status(404).json({ error: "Message not found or not authorized" });
+    }
+
+    res.json({ success: true, data: message });
+  } catch (err) {
+    console.error("Delete error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+}
+
+async function editMessage(req, res) {
+  try {
+    const { messageId } = req.params;       // message ID
+    const { userId, content } = req.body;  // new content + who’s editing
+
+    // Find and update only if message belongs to the user
+    const message = await Message.findOneAndUpdate(
+      { _id: messageId, senderId: userId },  // notice: senderId not sender
+      { content },
+      { new: true }                   // return updated doc
+    ).populate("senderId", "name email");
+
+    if (!message) {
+      return res.status(404).json({ error: "Message not found or not authorized" });
+    }
+
+    res.json({ success: true, data: message });
+  } catch (err) {
+    console.error("Edit error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+}
+
+
+
+
+module.exports = { 
+  createMessage, 
+  getMessages, 
+  getAllMessages,
+  deleteMessage,
+  editMessage
+};
