@@ -1,27 +1,33 @@
 const nodemailer = require("nodemailer");
 
 async function sendEmail(to, subject, html) {
-  // transporter
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST, // e.g. "smtp.gmail.com"
-    port: process.env.EMAIL_PORT, // 587 for TLS
-    secure: false, // true for port 465, false for other ports
-    auth: {
-      user: process.env.EMAIL_USER, // your email
-      pass: process.env.EMAIL_PASS, // your app password
-    },
-  });
+  try {
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
 
-  // mail options
-  const mailOptions = {
-    from: `"Zaptalk" <${process.env.EMAIL_USER}>`,
-    to,
-    subject,
-    html,
-  };
+    await transporter.verify(); // will throw if connection/auth fails
 
-  // send mail
-  await transporter.sendMail(mailOptions);
+    const mailOptions = {
+      from: `"Zaptalk" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      html,
+    };
+
+    let info = await transporter.sendMail(mailOptions);
+    console.log("Email sent:", info.messageId);
+    return info;
+  } catch (err) {
+    console.error("Nodemailer error:", err);
+    throw err; 
+  }
 }
 
 module.exports = sendEmail;

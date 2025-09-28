@@ -57,7 +57,8 @@ const verificationLink = `${process.env.APP_URL}/auth/verify-email?token=${rawTo
 
 console.log(verificationLink);
 
-await sendEmail(
+try {
+  await sendEmail(
   email,
   "Verify your Zaptalk account",
   `<p>Hello ${name},</p>
@@ -65,6 +66,13 @@ await sendEmail(
    <a href="${verificationLink}">${verificationLink}</a>
    <p>This link will expire in 1 hour.</p>`
 );
+} catch (error) {
+    console.error("Email send error:", error);
+  // optionally respond differently so you know it's email-related
+  return res.status(500).json({ message: "Email failed", error: error.message });
+}
+
+
 
 
     return res.status(201).json({
