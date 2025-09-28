@@ -5,6 +5,11 @@ const userSchema = new mongoose.Schema(
     email: { type: String, unique: true, required: true },
     password: { type: String, required: true },
     avatar: { type: String, default: "" },
+    isVerified: { type: Boolean, default: false },
+
+    //  Email verification fields
+    verificationToken: { type: String }, // will store a hashed token
+    verificationTokenExpires: { type: Date },
 
     bioStatus: {
       type: String,
@@ -20,7 +25,6 @@ const userSchema = new mongoose.Schema(
       lastSeen: { type: Date, default: null },
     },
 
-   
     friends: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -28,22 +32,23 @@ const userSchema = new mongoose.Schema(
       },
     ],
     friendRequests: [
-    {
-      from: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-      createdAt: { type: Date, default: Date.now }
-    }
-  ],
+      {
+        from: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
 
- // Outgoing requests
-  sentFriendRequests: [
-    {
-      to: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-      createdAt: { type: Date, default: Date.now },
-    },
-  ],  
+    // Outgoing requests
+    sentFriendRequests: [
+      {
+        to: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   { timestamps: true }
 );
+
 
 
 
