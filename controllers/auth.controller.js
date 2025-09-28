@@ -10,6 +10,7 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 async function register(req, res) {
   try {
     const { name, email, password } = req.body;
+    console.log(req.body);
     
 
     if (!name || !email || !password) {
