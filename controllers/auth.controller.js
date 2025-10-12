@@ -52,18 +52,18 @@ await user.save();
 
 
 // Build verification link
-const verificationLink = `${process.env.APP_URL}/auth/verify-email?token=${rawToken}`;
+// const verificationLink = `${process.env.APP_URL}/auth/verify-email?token=${rawToken}`;
 
-console.log(verificationLink);
+// console.log(verificationLink);
 
-await sendEmail(
-  email,
-  "Verify your Zaptalk account",
-  `<p>Hello ${name},</p>
-   <p>Click below to verify your email:</p>
-   <a href="${verificationLink}">${verificationLink}</a>
-   <p>This link will expire in 1 hour.</p>`
-);
+// await sendEmail(
+//   email,
+//   "Verify your Zaptalk account",
+//   `<p>Hello ${name},</p>
+//    <p>Click below to verify your email:</p>
+//    <a href="${verificationLink}">${verificationLink}</a>
+//    <p>This link will expire in 1 hour.</p>`
+// );
 
 
     return res.status(201).json({
@@ -81,38 +81,38 @@ await sendEmail(
 }
 
 
- async function verifyEmail(req, res) {
-  try {
-    const { token } = req.query;
-    if (!token) {
-      return res.status(400).json({ error: "Token is required" });
-    }
+//  async function verifyEmail(req, res) {
+//   try {
+//     const { token } = req.query;
+//     if (!token) {
+//       return res.status(400).json({ error: "Token is required" });
+//     }
 
-    // Hash token to compare with DB
-    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+//     // Hash token to compare with DB
+//     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-    // Find user with this token and still valid
-    const user = await User.findOne({
-      verificationToken: hashedToken,
-      verificationTokenExpires: { $gt: Date.now() }, 
-    });
+//     // Find user with this token and still valid
+//     const user = await User.findOne({
+//       verificationToken: hashedToken,
+//       verificationTokenExpires: { $gt: Date.now() }, 
+//     });
 
-    if (!user) {
-      return res.status(400).json({ error: "Token is invalid or expired" });
-    }
+//     if (!user) {
+//       return res.status(400).json({ error: "Token is invalid or expired" });
+//     }
 
-    // Update user
-    user.isVerified = true;
-    user.verificationToken = undefined;
-    user.verificationTokenExpires = undefined;
-    await user.save();
+//     // Update user
+//     user.isVerified = true;
+//     user.verificationToken = undefined;
+//     user.verificationTokenExpires = undefined;
+//     await user.save();
 
-     return res.redirect(`${process.env.FRONTEND_URL}/login?verified=true`);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Something went wrong" });
-  }
-}
+//      return res.redirect(`${process.env.FRONTEND_URL}/login?verified=true`);
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).json({ error: "Something went wrong" });
+//   }
+// }
 
 
 async function resendVerificationEmail(req, res) {
@@ -175,11 +175,11 @@ async function login(req, res) {
     }
 
         // Check if email is verified
-    if (!user.isVerified) {
-      return res
-        .status(403)
-        .json({ error: "Please verify your email before logging in." });
-    }
+    // if (!user.isVerified) {
+    //   return res
+    //     .status(403)
+    //     .json({ error: "Please verify your email before logging in." });
+    // }
 
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
@@ -188,7 +188,7 @@ async function login(req, res) {
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: user._id, name: user.name, email: user.email },
+      { id: user._id, name: user.name, email: user.email, friends: user.friends },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
@@ -286,9 +286,15 @@ async function test (req, res) {
 
     res.json({ message: "Test email sent successfully!" });
   } catch (err) {
-    console.error("Email error:", err);
+      console.error("Email error details:", {
+    message: err.message,
+    code: err.code,
+    command: err.command,
+    response: err.response,
+    responseCode: err.responseCode,
+  });
     res.status(500).json({ error: "Email failed to send" });
   }
 }
 
-module.exports = { register, login, test, verifyEmail, resendVerificationEmail, googleLogin };
+module.exports = { register, login, test, googleLogin };

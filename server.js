@@ -216,6 +216,8 @@ socket.on('stopTyping', (data) => {
 
   // Mark user offline manually
   socket.on("user-offline", async (userId) => {
+    console.log("user-offline event received for userId:", userId);
+    
     try {
       const lastSeen = new Date();
       await User.findByIdAndUpdate(userId, {
